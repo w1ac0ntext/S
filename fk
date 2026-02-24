@@ -1,0 +1,67 @@
+local player = game.Players.LocalPlayer
+
+if player.Character and player.Character:FindFirstChildOfClass("Humanoid") and player.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 then
+    return
+end
+
+local function updateAnimations(character)
+    local humanoid = character:WaitForChild("Humanoid", 5)
+    local animate = character:WaitForChild("Animate", 5)
+    
+    if not humanoid or not animate then return end
+    
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+        track:Stop(0)
+    end
+    
+    local function setAnim(folderName, animId)
+        local folder = animate:FindFirstChild(folderName)
+        if folder then
+            local anim = folder:FindFirstChildOfClass("Animation")
+            if anim then
+                anim.AnimationId = "http://www.roblox.com/asset/?id=" .. animId
+            end
+        end
+    end
+
+    setAnim("run", "707861613")
+    setAnim("walk", "707897309")
+    setAnim("jump", "1083455352")
+    setAnim("fall", "1083443587")
+    setAnim("climb", "1083439238")
+    setAnim("swim", "616011509")
+    setAnim("swimidle", "616012453")
+
+    local idle = animate:FindFirstChild("idle")
+    if idle then
+        if idle:FindFirstChild("Animation1") then
+            idle.Animation1.AnimationId = "rbxassetid://616158929"
+        end
+        if idle:FindFirstChild("Animation2") then
+            idle.Animation2.AnimationId = "rbxassetid://616160636"
+        end
+    end
+    
+    animate.Disabled = true
+    task.wait(0.03)
+    animate.Disabled = false
+end
+
+local function onCharacterAdded(character)
+    task.spawn(function()
+
+        task.wait(0.08)
+        updateAnimations(character)
+        
+        task.wait(0.12)
+        updateAnimations(character)
+    end)
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)
+
+if player.Character then
+    task.spawn(function()
+        updateAnimations(player.Character)
+    end)
+end
